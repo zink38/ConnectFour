@@ -1,0 +1,90 @@
+   for (int i = 0; i < 7; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            pos = dropPiece(1, i);
+            if(isConnectFour(pos))
+            {
+                break;
+            }
+        }
+
+        printBoard();
+        printf("%d wins! placed in column %d \n", board[pos.x][pos.y], pos.x);
+        reset();
+    }
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            pos = dropPiece(1, i + j);
+            if(isConnectFour(pos))
+            {
+                break;
+            }
+        }
+
+        printBoard();
+        printf("%d wins! placed in column %d \n", board[pos.x][pos.y], pos.x);
+        reset();
+    }
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            int id;
+            for (int k = 0; k <= j; k++)
+            {
+                if (k == j)
+                {
+                    id = 1;
+                }
+                else
+                {
+                    id = 2;
+                }
+                pos = dropPiece(id, i + j);
+                if(isConnectFour(pos))
+                {
+                    break;
+                }
+            }
+            if(isConnectFour(pos))
+            {
+                break;
+            }
+        }
+        printBoard();
+        printf("%d wins! placed in column %d \n", board[pos.x][pos.y], pos.x);
+        reset();
+    }
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 3; j >= 0; j--)
+        {
+            int id;
+            for (int k = 0; k <= j; k++)
+            {
+                if (k == j)
+                {
+                    id = 1;
+                }
+                else
+                {
+                    id = 2;
+                }
+                pos = dropPiece(id, i + 3-j);
+                if(isConnectFour(pos))
+                {
+                    break;
+                }
+            }
+            if(isConnectFour(pos))
+            {
+                break;
+            }
+        }
+        isConnectFour(pos);
+        printBoard();
+        printf("%d wins! placed in column %d \n", board[pos.x][pos.y], pos.x);
+        reset();
