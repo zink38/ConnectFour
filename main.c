@@ -90,7 +90,7 @@ bool isConnectFour(struct position pos)
                 if (count == 3)
                 {
                     found = true;
-                    printf("Vertical Connect\n");
+                    //printf("Vertical Connect\n");
                     return found;
                 }
             }
@@ -116,7 +116,7 @@ bool isConnectFour(struct position pos)
                 if (count == 4)
                 {
                     found = true;
-                    printf("horizontal connect\n");
+                    //printf("horizontal connect\n");
                     return found;
                 }
             }
@@ -142,7 +142,7 @@ bool isConnectFour(struct position pos)
                     if (count == 4)
                     {
                         found = true;
-                        printf("diangle 1 connect\n");
+                        //printf("diagonal 1 connect\n");
                         return found;
                     }
                 }
@@ -167,7 +167,7 @@ bool isConnectFour(struct position pos)
                     if (count == 4)
                     {
                         found = true;
-                        printf("diangle 2 connect\n");
+                        //printf("diagonal 2 connect\n");
                         return found;
                     }
                 }
@@ -187,6 +187,32 @@ bool validDrop(int col)
     if (board[col][5] != 0)
     {
         result = false;
+    }
+    return result;
+}
+
+bool isTrap(int id)
+{
+    bool result = false;
+    int count = 0;
+    struct position pos;
+    for (int i = 0; i < 7; i++)
+    {
+        if (validDrop(i))
+        {
+            pos = dropPiece(id, i);
+            if (isConnectFour(pos))
+            {
+                count++;
+            }
+            board[pos.x][pos.y] = 0;
+        }
+        if (count > 1)
+        {
+            //printf("trap found\n");
+            result = true;
+            return result;
+        }
     }
     return result;
 }
@@ -226,10 +252,39 @@ int KeeganAI()
             }
         }
     }
-    do{
+    for (int i = 0; i < 7; i++)
+    {
+        if (validDrop(i))
+        {
+            pos = dropPiece(id, i);
+            found = isTrap(id);
+            board[pos.x][pos.y] = 0;
+            if (found)
+            {
+                choice = i;
+                return choice;
+            }
+        }
+    }
+    for (int i = 0; i < 7; i++)
+    {
+        if (validDrop(i))
+        {
+            pos = dropPiece(oppID, i);
+            found = isTrap(oppID);
+            board[pos.x][pos.y] = 0;
+            if (found)
+            {
+                choice = i;
+                return choice;
+            }
+        }
+    }
+    do
+    {
         choice = rand() % 5 + 1;
-    }while(!validDrop);
-    
+    } while (!validDrop(choice));
+
     return choice;
 }
 
@@ -258,7 +313,8 @@ int main()
                 {
                     printf("choose a VALID column {0,1,2,3,4,5,6}: ");
                     scanf("%d", &col);
-                    printf("WTF");
+
+                    //printf("WTF");
                 } while (!validDrop(col));
             }
             else
