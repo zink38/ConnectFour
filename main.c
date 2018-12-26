@@ -191,7 +191,7 @@ bool validDrop(int col)
     return result;
 }
 
-bool isTrap(int id)
+bool isFork(int id)
 {
     bool result = false;
     int count = 0;
@@ -216,14 +216,35 @@ bool isTrap(int id)
     }
     return result;
 }
+//Check for forks
+bool isTrap(int id,int col){
+    bool result = false;
+    struct position pos0;
+    struct position pos1;
+    if(validDrop(col)){
+        pos0 = dropPiece(9,col);
+        if(validDrop(col)){
+            pos1 = dropPiece(id,col);
+            result = isConnectFour(pos1);
+            if(!result){
+                result = isFork(id);
+            }
+            board[pos1.x][pos1.y] = 0;
+        }
+        board[pos0.x][pos0.y] = 0;
+    }
+    return result;
+}
 
 int KeeganAI()
 {
+    int noPick[7] = {0};
     int id = 2;
     int oppID = 1;
     bool found = false;
     int choice = 0;
     struct position pos;
+    int count=0;
     for (int i = 0; i < 7; i++)
     {
         if (validDrop(i))
@@ -257,7 +278,7 @@ int KeeganAI()
         if (validDrop(i))
         {
             pos = dropPiece(id, i);
-            found = isTrap(id);
+            found = isFork(id);
             board[pos.x][pos.y] = 0;
             if (found)
             {
@@ -271,7 +292,7 @@ int KeeganAI()
         if (validDrop(i))
         {
             pos = dropPiece(oppID, i);
-            found = isTrap(oppID);
+            found = isFork(oppID);
             board[pos.x][pos.y] = 0;
             if (found)
             {
@@ -280,10 +301,22 @@ int KeeganAI()
             }
         }
     }
+    for (int i=0; i<7;i++){
+        if(isTrap(oppID,i)){
+            noPick[i] = 1;
+        }
+    }
+
     do
     {
-        choice = rand() % 5 + 1;
-    } while (!validDrop(choice));
+        count++;
+        choice = rand() % 7;
+        if(count == 20){
+            for(int i=0;i<7;i++){
+                noPick[i]=0;
+            }
+        }
+    } while (!validDrop(choice)||noPick[choice]==1);
 
     return choice;
 }
@@ -305,8 +338,6 @@ int main()
         while (!gameover)
         {
             turn++;
-            id = id + shifter;
-            shifter *= -1;
             if (turn % 2 == 1)
             {
                 do
@@ -316,12 +347,14 @@ int main()
 
                     //printf("WTF");
                 } while (!validDrop(col));
+                pos = dropPiece(id-1, col);
             }
             else
             {
                 col = KeeganAI();
+                pos = dropPiece(id, col);
             }
-            pos = dropPiece(id, col);
+            
             printBoard();
             printf("\n");
             gameover = isConnectFour(pos);
