@@ -54,6 +54,26 @@ struct position dropPiece(int id, int col)
     return pos;
 }
 
+struct position mockDropPiece(int col){
+    struct position pos;
+    bool dropped = false;
+    int i = 0;
+    while (!dropped && i < 6)
+    {
+        if (board[col][i] == 0)
+        {
+            dropped = true;
+        }
+        if (!dropped)
+        {
+            i++;
+        }
+    }
+    pos.x = col;
+    pos.y = i;
+    return pos;
+}
+
 void printBoard()
 {
     for (int i = 5; i >= 0; i--)
@@ -236,6 +256,11 @@ bool isTrap(int id,int col){
     return result;
 }
 
+
+
+
+
+
 int KeeganAI()
 {
     int noPick[7] = {0};
@@ -255,6 +280,7 @@ int KeeganAI()
             if (found)
             {
                 choice = i;
+                printf("I win!\n");
                 return choice;
             }
         }
@@ -269,6 +295,7 @@ int KeeganAI()
             if (found)
             {
                 choice = i;
+                printf("blocked ya\n");
                 return choice;
             }
         }
@@ -283,6 +310,7 @@ int KeeganAI()
             if (found)
             {
                 choice = i;
+                printf("forked ya\n");
                 return choice;
             }
         }
@@ -296,6 +324,7 @@ int KeeganAI()
             board[pos.x][pos.y] = 0;
             if (found)
             {
+                printf("I won't let you fork me.\n");
                 choice = i;
                 return choice;
             }
@@ -303,15 +332,24 @@ int KeeganAI()
     }
     for (int i=0; i<7;i++){
         if(isTrap(oppID,i)){
+            printf("%d, is a trap.\n",i);
             noPick[i] = 1;
         }
     }
+
+    if(board[3][0]==0){
+        return 3;
+    }
+
+   
 
     do
     {
         count++;
         choice = rand() % 7;
-        if(count == 20){
+        printf("random play, hope it works\n");
+        if(count == 100){
+            printf("I am forced to play bad :(.\n");
             for(int i=0;i<7;i++){
                 noPick[i]=0;
             }
@@ -324,7 +362,7 @@ int KeeganAI()
 int main()
 {
     srand(time(NULL));
-
+    int playerTurn;
     bool gameover = false;
     struct position pos;
     int id = 2;
@@ -334,11 +372,13 @@ int main()
     int turn = 0;
     while (sentinel)
     {
+        printf("would you like to play first? {0,1}");
+        scanf("%d", &playerTurn);
         bool gameover = false;
         while (!gameover)
         {
             turn++;
-            if (turn % 2 == 1)
+            if (playerTurn)
             {
                 do
                 {
@@ -348,11 +388,13 @@ int main()
                     //printf("WTF");
                 } while (!validDrop(col));
                 pos = dropPiece(id-1, col);
+                playerTurn = 0;
             }
             else
             {
                 col = KeeganAI();
                 pos = dropPiece(id, col);
+                playerTurn =1;
             }
             
             printBoard();
